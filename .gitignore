@@ -74,3 +74,4 @@ atlassian*
 .DS_Store
 
 /docker-magento/*
+/app/code/Pulsestorm

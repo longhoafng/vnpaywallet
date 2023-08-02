@@ -6,15 +6,14 @@
 
 namespace RestApi\SignupTutorial\Model;
 
+use Magento\Framework\Encryption\EncryptorInterface as Encryptor;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\State\InputMismatchException;
+use Magento\Framework\Stdlib\StringUtils as StringHelper;
 use RestApi\SignupTutorial\Api\Data\UserInterface;
 use RestApi\SignupTutorial\Api\UserManagementInterface;
-use Magento\Framework\Stdlib\StringUtils as StringHelper;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Encryption\EncryptorInterface as Encryptor;
 use RestApi\SignupTutorial\Model\ResourceModel\UserRepository;
 
 /**
@@ -34,21 +33,20 @@ class UserManagement implements UserManagementInterface
     /**
      * @var StringHelper
      */
-    protected $stringHelper;
+    protected StringHelper $stringHelper;
 
     /**
      * @var Encryptor
      */
-    private $encryptor;
+    private Encryptor $encryptor;
 
-    protected $userRepository;
+    protected UserRepository $userRepository;
 
     public function __construct(
         UserRepository $userRepository,
         StringHelper $stringHelper,
         Encryptor $encryptor,
-    )
-    {
+    ) {
         $this->userRepository = $userRepository;
         $this->stringHelper = $stringHelper;
         $this->encryptor = $encryptor;
@@ -59,19 +57,16 @@ class UserManagement implements UserManagementInterface
      *
      * @throws LocalizedException
      */
-    public function createUser( UserInterface $user)
+    public function createUser(UserInterface $user)
     {
-        
         if ($user->getPassword() !== null) {
-            
             $this->checkPasswordStrength($user->getPassword());
-            $user->setPassword($this->createPasswordHash($user->getPassword())) ;
+            $user->setPassword($this->createPasswordHash($user->getPassword()));
         } else {
             $hash = null;
         }
         return $this->createUserWithPasswordHash($user);
     }
-
 
     /**
      * Make sure that password complies with minimum security requirements.
@@ -80,7 +75,7 @@ class UserManagement implements UserManagementInterface
      * @return void
      * @throws InputException
      */
-    protected function checkPasswordStrength($password)
+    protected function checkPasswordStrength(string $password): void
     {
         $length = $this->stringHelper->strlen($password);
         if ($length > self::MAX_PASSWORD_LENGTH) {
@@ -125,7 +120,7 @@ class UserManagement implements UserManagementInterface
      * @param string $password
      * @return int
      */
-    protected function makeRequiredCharactersCheck($password)
+    protected function makeRequiredCharactersCheck(string $password): int
     {
         $counter = 0;
         $requiredNumber = self::REQUIRED_CHARACTER_NUMBER;
@@ -152,7 +147,7 @@ class UserManagement implements UserManagementInterface
 
         return $return;
     }
-    
+
     /**
      * Create a hash for the given password
      *
@@ -178,7 +173,6 @@ class UserManagement implements UserManagementInterface
             if ($userData) {
                 throw new InputException(__('This customer already exists in this store.'));
             }
-            
         }
 
         try {
@@ -191,7 +185,7 @@ class UserManagement implements UserManagementInterface
         } catch (LocalizedException $e) {
             throw $e;
         }
-        
+
         return $user;
     }
 }
