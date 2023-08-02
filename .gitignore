@@ -75,3 +75,16 @@ atlassian*
 
 /docker-magento/*
 /app/code/Pulsestorm
+/app/design
+/app/etc
+/app/.htaccess
+/app/autoload.php
+/app/bootstrap.php
+
+/bin
+/dev
+/generated
+/lib
+/phpserver
+/pub
+/setup
